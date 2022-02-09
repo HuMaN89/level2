@@ -91,21 +91,49 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //modal
 
-  const btn1 = document.querySelector(".btn_white"),
-    btn2 = document.querySelector(".btn_dark"),
-    modal = document.querySelector(".modal"),
-    modalWindow = modal.querySelector(".modal__dialog"),
-    close = modal.querySelector(".modal__close");
+  // const btn1 = document.querySelector(".btn_white"),
+  //   btn2 = document.querySelector(".btn_dark"),
+  //   modal = document.querySelector(".modal"),
+  //   modalWindow = modal.querySelector(".modal__dialog"),
+  //   close = modal.querySelector(".modal__close");
 
-  function showModal() {
-    modal.classList.toggle("show");
+  // function showModal() {
+  //   modal.classList.toggle("show");
+  // }
+
+  // btn1.addEventListener("click", showModal);
+  // btn2.addEventListener("click", showModal);
+  // modal.addEventListener("click", showModal);
+  // close.addEventListener("click", showModal);
+  // modalWindow.addEventListener("click", (e) => {
+  //   e.stopPropagation();
+  // });
+
+  const openBtns = document.querySelectorAll("[data-modal]"),
+    close = document.querySelector("[data-close]"),
+    modal = document.querySelector(".modal");
+
+  openBtns.forEach((item) => {
+    item.addEventListener("click", () => {
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  function closeModal() {
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
   }
+  close.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
 
-  btn1.addEventListener("click", showModal);
-  btn2.addEventListener("click", showModal);
-  modal.addEventListener("click", showModal);
-  close.addEventListener("click", showModal);
-  modalWindow.addEventListener("click", (e) => {
-    e.stopPropagation();
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Escape") {
+      closeModal();
+    }
   });
 });
