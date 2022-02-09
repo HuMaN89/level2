@@ -39,7 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //Timer
 
-  const deadline = "2022-02-06";
+  const deadline = "2022-02-09";
 
   function getTimeRemaning(endTime) {
     const t = Date.parse(endTime) - Date.parse(new Date()),
@@ -56,11 +56,7 @@ window.addEventListener("DOMContentLoaded", () => {
       seconds: seconds,
     };
   }
-  console.log(getTimeRemaning(deadline).total);
-  console.log(getTimeRemaning(deadline).days);
-  console.log(getTimeRemaning(deadline).hours);
-  console.log(getTimeRemaning(deadline).minutes);
-  console.log(getTimeRemaning(deadline).seconds);
+
   function getZero(num) {
     if (num >= 0 && num < 10) {
       return `0${num}`;
@@ -92,4 +88,24 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
   setClock(".timer", deadline);
+
+  //modal
+
+  const btn1 = document.querySelector(".btn_white"),
+    btn2 = document.querySelector(".btn_dark"),
+    modal = document.querySelector(".modal"),
+    modalWindow = modal.querySelector(".modal__dialog"),
+    close = modal.querySelector(".modal__close");
+
+  function showModal() {
+    modal.classList.toggle("show");
+  }
+
+  btn1.addEventListener("click", showModal);
+  btn2.addEventListener("click", showModal);
+  modal.addEventListener("click", showModal);
+  close.addEventListener("click", showModal);
+  modalWindow.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
 });
