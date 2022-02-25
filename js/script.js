@@ -1,4 +1,5 @@
 "use strict";
+
 window.addEventListener("DOMContentLoaded", () => {
   //Tabs
 
@@ -193,37 +194,26 @@ window.addEventListener("DOMContentLoaded", () => {
       this.parent.append(element);
     }
   }
-  new MenuCard(
-    "img/tabs/vegy.jpg",
-    "vegy",
-    'Меню "Фитнес"',
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    9,
-    ".menu .container",
-    "menu__item"
-  ).render();
+  const getResourses = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    }
+    return await res.json();
+  };
 
-  new MenuCard(
-    "img/tabs/elite.jpg",
-    "elite",
-    "Меню “Премиум”",
-    "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-    15,
-    ".menu .container",
-    "menu__item"
-  ).render();
-
-  new MenuCard(
-    "img/tabs/post.jpg",
-    "post",
-    'Меню "Постное"',
-    "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-    12,
-    ".menu .container",
-    "menu__item",
-    "big"
-  ).render();
-
+  getResourses("http://localhost:3000/menu").then((data) => {
+    data.forEach(({ img, altimg, title, descr, price }) => {
+      new MenuCard(
+        img,
+        altimg,
+        title,
+        descr,
+        price,
+        ".menu .container"
+      ).render();
+    });
+  });
   // Forms
 
   const forms = document.querySelectorAll("form");
@@ -235,10 +225,10 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   forms.forEach((item) => {
-    postData(item);
+    bindPostData(item);
   });
 
-  // function postData(form) {
+  // function bindPostData(form) {
   //   form.addEventListener("submit", (e) => {
   //     e.preventDefault();
   //     const statusMessage = document.createElement("div");
@@ -266,7 +256,18 @@ window.addEventListener("DOMContentLoaded", () => {
   //   });
   // }
 
-  function postData(form) {
+  const postData = async (url, data) => {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: data,
+    });
+    return await res.json();
+  };
+
+  function bindPostData(form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const statusMessage = document.createElement("img");
@@ -278,26 +279,21 @@ window.addEventListener("DOMContentLoaded", () => {
       // form.append(statusMessage);
       form.insertAdjacentElement("afterend", statusMessage);
 
-      const request = new XMLHttpRequest();
-      request.open("POST", "server.php");
-      request.setRequestHeader("Content-type", "aplication/json");
       const formData = new FormData(form);
-      const obj = {};
-      formData.forEach((value, key) => {
-        obj[key] = value;
-      });
-      request.send(JSON.stringify(obj));
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-      request.addEventListener("load", () => {
-        if (request.status === 200) {
-          console.log(request.response);
+      postData("http://localhost:3000/requests", json)
+        .then((data) => {
+          console.log(data);
           showTanksModal(message.success);
-          form.reset();
           statusMessage.remove();
-        } else {
+        })
+        .catch(() => {
           showTanksModal(message.failure);
-        }
-      });
+        })
+        .finally(() => {
+          form.reset();
+        });
     });
   }
 
@@ -324,4 +320,38 @@ window.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }, 4000);
   }
+
+  //Пример работы с сервером
+  // fetch("https://jsonplaceholder.typicode.com/todos/1")
+  //   .then((response) => response.json())
+  //   .then((json) => console.log(json));
+
+  //Пример работы с сервером  POST
+  // fetch("https://jsonplaceholder.typicode.com/posts", {
+  //   method: 'POST',
+  //   body: JSON.stringify({name: 'Alex'}),
+  //   headers: {
+  //     'Content-type': 'aplication/json'
+  //   }
+  // })
+  //   .then((response) => response.json())
+  //   .then((json) => console.log(json));
+
+  // fetch("http://localhost:3000/requests")
+  //   .then((data) => data.json())
+  //   .then((res) => console.log(res));
+
+  // fetch("http://localhost:3000/requests", {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     title: "foo",
+  //     body: "bar",
+  //     userId: 1,
+  //   }),
+  //   headers: {
+  //     "Content-type": "application/json; charset=UTF-8",
+  //   },
+  // })
+  //   .then((response) => response.json())
+  //   .then((json) => console.log(json));
 });
