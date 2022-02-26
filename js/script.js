@@ -354,4 +354,54 @@ window.addEventListener("DOMContentLoaded", () => {
   // })
   //   .then((response) => response.json())
   //   .then((json) => console.log(json));
+
+  // Слайдер
+
+  const slides = document.querySelectorAll(".offer__slide"),
+    current = document.querySelector("#current"),
+    total = document.querySelector("#total"),
+    prevBtn = document.querySelector(".offer__slider-prev"),
+    nextBtn = document.querySelector(".offer__slider-next");
+  let counter = 0;
+
+  const hideSlides = () => {
+    slides.forEach((item) => {
+      item.classList.add("hide");
+      item.classList.remove("show");
+    });
+  };
+
+  const showSlide = (index) => {
+    hideSlides();
+    slides[index].classList.remove("hide");
+    slides[index].classList.add("show");
+    current.innerHTML = getZero(index + 1);
+    counter = index;
+  };
+  showSlide(0);
+
+  total.innerHTML = getZero(slides.length);
+
+  // const slidesTimer = setInterval(() => {
+  //   counter++;
+  //   if (counter >= slides.length) {
+  //     counter = 0;
+  //   }
+  //   showSlide(counter);
+  // }, 1000);
+
+  nextBtn.addEventListener("click", () => {
+    counter++;
+    if (counter >= slides.length) {
+      counter = 0;
+    }
+    showSlide(counter);
+  });
+  prevBtn.addEventListener("click", () => {
+    counter--;
+    if (counter === -1) {
+      counter = slides.length - 1;
+    }
+    showSlide(counter);
+  });
 });

@@ -22,11 +22,5 @@
       "price": 21
     }
   ],
-  "requests": [
-    {
-      "name": "qweqwe",
-      "phone": "123123",
-      "id": 1
-    }
-  ]
+  "requests": []
 }
