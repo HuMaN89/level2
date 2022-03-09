@@ -517,6 +517,43 @@ window.addEventListener("DOMContentLoaded", () => {
     weight,
     activiti;
 
+  if (localStorage.getItem("sex")) {
+    sex = localStorage.getItem("sex");
+  } else {
+    localStorage.setItem("sex", "female");
+    sex = "female";
+  }
+
+  if (localStorage.getItem("activiti")) {
+    activiti = localStorage.getItem("activiti");
+  } else {
+    localStorage.setItem("activiti", 1.375);
+    activiti = 1.375;
+  }
+
+  function setLocalData(parentSelector, activeClass) {
+    const elements = document.querySelectorAll(parentSelector);
+
+    elements.forEach((elem) => {
+      elem.classList.remove(activeClass);
+      if (elem.getAttribute("id") === localStorage.getItem("sex")) {
+        elem.classList.add(activeClass);
+      }
+      if (
+        elem.getAttribute("data-active") === localStorage.getItem("activiti")
+      ) {
+        elem.classList.add(activeClass);
+      }
+    });
+    calcTotal();
+  }
+
+  setLocalData("#gender div", "calculating__choose-item_active");
+  setLocalData(
+    ".calculating__choose_big div",
+    "calculating__choose-item_active"
+  );
+
   function calcTotal() {
     if (!sex || !age || !height || !weight || !activiti) {
       result.textContent = "_____";
@@ -537,18 +574,22 @@ window.addEventListener("DOMContentLoaded", () => {
   function getStaticInformation(parentSelector, activeClass) {
     const elements = document.querySelectorAll(`${parentSelector} div`);
 
-    document.querySelector(parentSelector).addEventListener("click", (e) => {
-      if (e.target.getAttribute("data-active")) {
-        activiti = +e.target.getAttribute("data-active");
-      } else {
-        sex = e.target.getAttribute("id");
-      }
+    elements.forEach((elem) => {
+      elem.addEventListener("click", (e) => {
+        if (e.target.getAttribute("data-active")) {
+          activiti = +e.target.getAttribute("data-active");
+          localStorage.setItem("activiti", activiti);
+        } else {
+          sex = e.target.getAttribute("id");
+          localStorage.setItem("sex", sex);
+        }
 
-      elements.forEach((elem) => {
-        elem.classList.remove(activeClass);
+        elements.forEach((elem) => {
+          elem.classList.remove(activeClass);
+        });
+        e.target.classList.add(activeClass);
+        calcTotal();
       });
-      e.target.classList.add(activeClass);
-      calcTotal();
     });
   }
 
@@ -561,20 +602,23 @@ window.addEventListener("DOMContentLoaded", () => {
   function getDynamicInformation(selector) {
     const input = document.querySelector(selector);
     input.addEventListener("input", () => {
+      if (input.value.match(/\D/g)) {
+        //проверка ввода регулярным выражением
+        input.style.border = "1px solid red";
+      } else {
+        input.style.border = "none";
+      }
       switch (input.getAttribute("id")) {
         case "age":
           age = +input.value;
-          console.log(age);
           break;
 
         case "weight":
           weight = +input.value;
-          console.log(weight);
           break;
 
         case "height":
           height = +input.value;
-          console.log(height);
           break;
       }
       calcTotal();
