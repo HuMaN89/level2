@@ -358,50 +358,230 @@ window.addEventListener("DOMContentLoaded", () => {
   // Слайдер
 
   const slides = document.querySelectorAll(".offer__slide"),
+    slider = document.querySelector(".offer__slider"),
     current = document.querySelector("#current"),
     total = document.querySelector("#total"),
-    prevBtn = document.querySelector(".offer__slider-prev"),
-    nextBtn = document.querySelector(".offer__slider-next");
-  let counter = 0;
+    prev = document.querySelector(".offer__slider-prev"),
+    next = document.querySelector(".offer__slider-next"),
+    slidesWrapper = document.querySelector(".offer__slider-wrapper"),
+    slidesField = document.querySelector(".offer__slider-inner"),
+    width = window.getComputedStyle(slidesWrapper).width;
 
-  const hideSlides = () => {
-    slides.forEach((item) => {
-      item.classList.add("hide");
-      item.classList.remove("show");
+  let slideIndex = 1,
+    offset = 0;
+
+  current.textContent = getZero(slideIndex);
+  total.textContent = getZero(slides.length);
+
+  slidesField.style.width = 100 * slides.length + "%";
+  slidesField.style.display = "flex";
+  slidesField.style.transition = "0.5s all";
+  slidesWrapper.style.overflow = "hidden";
+
+  slides.forEach((slide) => {
+    slide.style.width = width;
+  });
+
+  slider.style.position = "relative";
+
+  const indicators = document.createElement("ol"),
+    dots = [];
+  indicators.classList.add("carousel-indicators");
+  indicators.style.cssText = `
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  margin-right: 15%;
+  margin-left: 15%;
+  list-style: none;
+  `;
+  slider.append(indicators);
+
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement("li");
+    dot.setAttribute("data-slide-to", i + 1);
+    dot.style.cssText = `
+    box-sizing: content-box;
+    flex: 0 1 auto;
+    width: 30px;
+    height: 6px;
+    margin-right: 3px;
+    margin-left: 3px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    opacity: .5;
+    transition: opacity .6s ease;
+`;
+    if (i === slideIndex - 1) {
+      dot.style.opacity = "1";
+    }
+    indicators.append(dot);
+    dots.push(dot);
+  }
+
+  next.addEventListener("click", () => {
+    if (offset === +width.replace(/\d/g, "") * (slides.length - 1)) {
+      offset = 0;
+    } else {
+      offset += +width.replace(/\d/g, "");
+    }
+    slidesField.style.transform = `translateX(-${offset}px)`;
+
+    if (slideIndex == slides.length) {
+      slideIndex = 1;
+    } else {
+      slideIndex++;
+    }
+    current.textContent = getZero(slideIndex);
+    dots.forEach((dot) => (dot.style.opacity = "0.5"));
+    dots[slideIndex - 1].style.opacity = "1";
+  });
+
+  prev.addEventListener("click", () => {
+    if (offset === 0) {
+      offset = +width.replace(/\d/g, "") * (slides.length - 1);
+    } else {
+      offset -= -width.replace(/\d/g, "");
+    }
+    slidesField.style.transform = `translateX(-${offset}px)`;
+    if (slideIndex === 1) {
+      slideIndex = slides.length;
+    } else {
+      slideIndex--;
+    }
+    current.textContent = getZero(slideIndex);
+
+    dots.forEach((dot) => (dot.style.opacity = "0.5"));
+    dots[slideIndex - 1].style.opacity = "1";
+  });
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", (e) => {
+      const slideTo = e.target.getAttribute("data-slide-to");
+      slideIndex = slideTo;
+      offset = +width.replace(/\d/g, "") * (slideTo - 1);
+      slidesField.style.transform = `translateX(-${offset}px)`;
+      current.textContent = getZero(slideIndex);
+      dots.forEach((dot) => (dot.style.opacity = "0.5"));
+      dots[slideIndex - 1].style.opacity = "1";
     });
-  };
+  });
+  // let counter = 0;
 
-  const showSlide = (index) => {
-    hideSlides();
-    slides[index].classList.remove("hide");
-    slides[index].classList.add("show");
-    current.innerHTML = getZero(index + 1);
-    counter = index;
-  };
-  showSlide(0);
+  // const hideSlides = () => {
+  //   slides.forEach((item) => {
+  //     item.classList.add("hide");
+  //     item.classList.remove("show");
+  //   });
+  // };
 
-  total.innerHTML = getZero(slides.length);
+  // const showSlide = (index) => {
+  //   hideSlides();
+  //   slides[index].classList.remove("hide");
+  //   slides[index].classList.add("show");
+  //   current.innerHTML = getZero(index + 1);
+  //   counter = index;
+  // };
+  // showSlide(0);
 
-  // const slidesTimer = setInterval(() => {
+  // total.innerHTML = getZero(slides.length);
+
+  // next.addEventListener("click", () => {
   //   counter++;
   //   if (counter >= slides.length) {
   //     counter = 0;
   //   }
   //   showSlide(counter);
-  // }, 1000);
+  // });
+  // prev.addEventListener("click", () => {
+  //   counter--;
+  //   if (counter === -1) {
+  //     counter = slides.length - 1;
+  //   }
+  //   showSlide(counter);
+  // });
 
-  nextBtn.addEventListener("click", () => {
-    counter++;
-    if (counter >= slides.length) {
-      counter = 0;
+  //Calculator
+
+  let result = document.querySelector(".calculating__result span"),
+    sex,
+    age,
+    height,
+    weight,
+    activiti;
+
+  function calcTotal() {
+    if (!sex || !age || !height || !weight || !activiti) {
+      result.textContent = "_____";
+      return;
     }
-    showSlide(counter);
-  });
-  prevBtn.addEventListener("click", () => {
-    counter--;
-    if (counter === -1) {
-      counter = slides.length - 1;
+    if (sex === "female") {
+      result.textContent = Math.round(
+        (447.6 + weight * 9.2 + height * 3.1 - age * 4.3) * activiti
+      );
+    } else {
+      result.textContent = Math.round(
+        (88.36 + weight * 13.4 + height * 4.8 - age * 5.7) * activiti
+      );
     }
-    showSlide(counter);
-  });
+  }
+  calcTotal();
+
+  function getStaticInformation(parentSelector, activeClass) {
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+    document.querySelector(parentSelector).addEventListener("click", (e) => {
+      if (e.target.getAttribute("data-active")) {
+        activiti = +e.target.getAttribute("data-active");
+      } else {
+        sex = e.target.getAttribute("id");
+      }
+
+      elements.forEach((elem) => {
+        elem.classList.remove(activeClass);
+      });
+      e.target.classList.add(activeClass);
+      calcTotal();
+    });
+  }
+
+  getStaticInformation("#gender", "calculating__choose-item_active");
+  getStaticInformation(
+    ".calculating__choose_big",
+    "calculating__choose-item_active"
+  );
+
+  function getDynamicInformation(selector) {
+    const input = document.querySelector(selector);
+    input.addEventListener("input", () => {
+      switch (input.getAttribute("id")) {
+        case "age":
+          age = +input.value;
+          console.log(age);
+          break;
+
+        case "weight":
+          weight = +input.value;
+          console.log(weight);
+          break;
+
+        case "height":
+          height = +input.value;
+          console.log(height);
+          break;
+      }
+      calcTotal();
+    });
+  }
+
+  getDynamicInformation("#height");
+  getDynamicInformation("#weight");
+  getDynamicInformation("#age");
 });
