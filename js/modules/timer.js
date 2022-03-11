@@ -1,8 +1,12 @@
-function timer() {
-  //timer
+function getZero(num) {
+  if (num >= 0 && num < 10) {
+    return `0${num}`;
+  } else {
+    return num;
+  }
+}
 
-  const deadline = "2022-02-09";
-
+function timer(id, deadline) {
   function getTimeRemaning(endTime) {
     const t = Date.parse(endTime) - Date.parse(new Date()),
       days = Math.floor(t / (1000 * 60 * 60 * 24)),
@@ -19,13 +23,6 @@ function timer() {
     };
   }
 
-  function getZero(num) {
-    if (num >= 0 && num < 10) {
-      return `0${num}`;
-    } else {
-      return num;
-    }
-  }
   function setClock(selector, endTime) {
     const timer = document.querySelector(selector),
       days = timer.querySelector("#days"),
@@ -49,6 +46,7 @@ function timer() {
       }
     }
   }
-  setClock(".timer", deadline);
+  setClock(id, deadline);
 }
-module.exports = timer;
+export default timer;
+export { getZero };

@@ -1,3 +1,4 @@
+import { getZero } from "./timer";
 function slider() {
   // Слайдер
 
@@ -71,10 +72,10 @@ function slider() {
   }
 
   next.addEventListener("click", () => {
-    if (offset === +width.replace(/\d/g, "") * (slides.length - 1)) {
+    if (offset === +width.replace(/\D/g, "") * (slides.length - 1)) {
       offset = 0;
     } else {
-      offset += +width.replace(/\d/g, "");
+      offset += +width.replace(/\D/g, "");
     }
     slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -90,9 +91,9 @@ function slider() {
 
   prev.addEventListener("click", () => {
     if (offset === 0) {
-      offset = +width.replace(/\d/g, "") * (slides.length - 1);
+      offset = +width.replace(/\D/g, "") * (slides.length - 1);
     } else {
-      offset -= -width.replace(/\d/g, "");
+      offset -= -width.replace(/\D/g, "");
     }
     slidesField.style.transform = `translateX(-${offset}px)`;
     if (slideIndex === 1) {
@@ -110,46 +111,12 @@ function slider() {
     dot.addEventListener("click", (e) => {
       const slideTo = e.target.getAttribute("data-slide-to");
       slideIndex = slideTo;
-      offset = +width.replace(/\d/g, "") * (slideTo - 1);
+      offset = +width.replace(/\D/g, "") * (slideTo - 1);
       slidesField.style.transform = `translateX(-${offset}px)`;
       current.textContent = getZero(slideIndex);
       dots.forEach((dot) => (dot.style.opacity = "0.5"));
       dots[slideIndex - 1].style.opacity = "1";
     });
   });
-  // let counter = 0;
-
-  // const hideSlides = () => {
-  //   slides.forEach((item) => {
-  //     item.classList.add("hide");
-  //     item.classList.remove("show");
-  //   });
-  // };
-
-  // const showSlide = (index) => {
-  //   hideSlides();
-  //   slides[index].classList.remove("hide");
-  //   slides[index].classList.add("show");
-  //   current.innerHTML = getZero(index + 1);
-  //   counter = index;
-  // };
-  // showSlide(0);
-
-  // total.innerHTML = getZero(slides.length);
-
-  // next.addEventListener("click", () => {
-  //   counter++;
-  //   if (counter >= slides.length) {
-  //     counter = 0;
-  //   }
-  //   showSlide(counter);
-  // });
-  // prev.addEventListener("click", () => {
-  //   counter--;
-  //   if (counter === -1) {
-  //     counter = slides.length - 1;
-  //   }
-  //   showSlide(counter);
-  // });
 }
-module.exports = slider;
+export default slider;
