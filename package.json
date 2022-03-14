@@ -12,12 +12,25 @@
   },
   "author": "",
   "license": "ISC",
+  "browsersList": [
+    ">1%"
+  ],
   "bugs": {
     "url": "https://github.com/HuMaN89/level2/issues"
   },
   "homepage": "https://github.com/HuMaN89/level2#readme",
   "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-flow": "^7.16.7",
+    "babel-loader": "^8.2.3",
+    "core-js": "^3.21.1",
     "json-server": "^0.17.0",
+    "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1"
   }
 }
